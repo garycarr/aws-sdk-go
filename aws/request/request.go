@@ -182,11 +182,11 @@ type Option func(*Request)
 //
 // This Option can be used multiple times with a single API operation.
 //
-//    var id2, versionID string
-//    svc.PutObjectWithContext(ctx, params,
-//        request.WithGetResponseHeader("x-amz-id-2", &id2),
-//        request.WithGetResponseHeader("x-amz-version-id", &versionID),
-//    )
+//	var id2, versionID string
+//	svc.PutObjectWithContext(ctx, params,
+//	    request.WithGetResponseHeader("x-amz-id-2", &id2),
+//	    request.WithGetResponseHeader("x-amz-version-id", &versionID),
+//	)
 func WithGetResponseHeader(key string, val *string) Option {
 	return func(r *Request) {
 		r.Handlers.Complete.PushBack(func(req *Request) {
@@ -199,8 +199,8 @@ func WithGetResponseHeader(key string, val *string) Option {
 // headers from the HTTP response and assign them to the passed in headers
 // variable. The passed in headers pointer must be non-nil.
 //
-//    var headers http.Header
-//    svc.PutObjectWithContext(ctx, params, request.WithGetResponseHeaders(&headers))
+//	var headers http.Header
+//	svc.PutObjectWithContext(ctx, params, request.WithGetResponseHeaders(&headers))
 func WithGetResponseHeaders(headers *http.Header) Option {
 	return func(r *Request) {
 		r.Handlers.Complete.PushBack(func(req *Request) {
@@ -212,7 +212,7 @@ func WithGetResponseHeaders(headers *http.Header) Option {
 // WithLogLevel is a request option that will set the request to use a specific
 // log level when the request is made.
 //
-//     svc.PutObjectWithContext(ctx, params, request.WithLogLevel(aws.LogDebugWithHTTPBody)
+//	svc.PutObjectWithContext(ctx, params, request.WithLogLevel(aws.LogDebugWithHTTPBody)
 func WithLogLevel(l aws.LogLevelType) Option {
 	return func(r *Request) {
 		r.Config.LogLevel = aws.LogLevel(l)
@@ -525,6 +525,7 @@ func (r *Request) GetBody() io.ReadSeeker {
 //
 // Send will not close the request.Request's body.
 func (r *Request) Send() error {
+	println("a")
 	defer func() {
 		// Ensure a non-nil HTTPResponse parameter is set to ensure handlers
 		// checking for HTTPResponse values, don't fail.
@@ -542,16 +543,16 @@ func (r *Request) Send() error {
 	if err := r.Error; err != nil {
 		return err
 	}
-
+	println("b")
 	for {
 		r.Error = nil
 		r.AttemptTime = time.Now()
-
+		println("c")
 		if err := r.Sign(); err != nil {
 			debugLogReqError(r, "Sign Request", notRetrying, err)
 			return err
 		}
-
+		println("d")
 		if err := r.sendRequest(); err == nil {
 			return nil
 		}
@@ -561,12 +562,14 @@ func (r *Request) Send() error {
 		if r.Error != nil || !aws.BoolValue(r.Retryable) {
 			return r.Error
 		}
-
+		println("e")
 		if err := r.prepareRetry(); err != nil {
 			r.Error = err
 			return err
 		}
+		println("f")
 	}
+
 }
 
 func (r *Request) prepareRetry() error {

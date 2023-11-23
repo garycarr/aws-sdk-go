@@ -3327,9 +3327,13 @@ func (c *SNS) Publish(input *PublishInput) (*PublishOutput, error) {
 // sub-contexts for http.Requests. See https://golang.org/pkg/context/
 // for more information on using Contexts.
 func (c *SNS) PublishWithContext(ctx aws.Context, input *PublishInput, opts ...request.Option) (*PublishOutput, error) {
+	println("1")
 	req, out := c.PublishRequest(input)
+	println("2")
 	req.SetContext(ctx)
+	println("3")
 	req.ApplyOptions(opts...)
+	println("4")
 	return out, req.Send()
 }
 
